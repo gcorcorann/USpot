@@ -1,3 +1,10 @@
+"""
+Histogram of Orientated Gradients.
+
+@author: Gary Corcoran
+@date: Nov. 23rd, 2017
+"""
+
 import cv2
 
 class HOG():

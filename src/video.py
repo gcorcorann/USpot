@@ -167,7 +167,7 @@ def main():
         video_path = sys.argv[1]
     else:
         # set default video path
-        video_path = 'dataset/IMG_0687.MOV'
+        video_path = '../dataset/IMG_0687.MOV'
     # HoG parameters
     hog_params = {'winSize': (384, 480), 'blockSize': (32, 32),
         'blockStride': (16, 16), 'cellSize': (16, 16), 'nbins': 9}    

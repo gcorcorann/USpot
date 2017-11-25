@@ -39,7 +39,7 @@ def read_dataset(mat_path, img_size):
     for i, img_info in enumerate(X_list):
         img_name = img_info[0]
         bb = img_info[1:]
-        img = cv2.imread('dataset/' + img_name)
+        img = cv2.imread('../dataset/' + img_name)
         # crop image
         img = img[bb[1]:bb[3], bb[0]:bb[2]]
         img = cv2.resize(img, img_size)
@@ -50,7 +50,7 @@ def read_dataset(mat_path, img_size):
 def main():
     """ Main Function. """
     # read all images in dataset
-    X = read_dataset('dataset/cars_annos.mat', img_size=(224,128))
+    X = read_dataset('../dataset/cars_annos.mat', img_size=(224,128))
     print('X:', X.shape)
 
 

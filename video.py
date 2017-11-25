@@ -2,7 +2,7 @@
 Video Player Module.
 
 @author: Gary Corcoran
-@date: Nov. 24th, 2017
+@date_created: Nov. 24th, 2017
 """
 
 import numpy as np
@@ -10,13 +10,15 @@ import cv2
 
 class Video():
     """ Video player. """
-    def __init__(self, video_path=None):
+    def __init__(self, video_path=None, processor=None):
         """
         Initialize parameters.
 
         @param  video_path: path to input video file
+        @param  processor:  frame processor object
         """
         self.video_path = video_path
+        self._processor = processor
         self._cap = None
 
     def set_video_path(self, video_path):
@@ -28,6 +30,16 @@ class Video():
         @modifies   self.video_path:    stores video file
         """
         self.video_path = video_path
+
+    def set_processor(self, processor):
+        """
+        Set frame processor.
+
+        @param  processor:  frame processor object
+        
+        @modifies   self._processor:    stores object
+        """
+        self._processor = processor
 
     def get_video_path(self):
         """
@@ -81,16 +93,14 @@ class Video():
             return False
         return True
 
-    def _process(self, frame):
+    def _rotate_crop(self, frame):
         """
-        Process video frame.
+        Rotate and crop frame accordingly.
 
         @param  frame:  input video frame
 
-        @return frame:  processed video frame
+        @return frame:  resultant frame
         """
-        # resize frame
-        frame = cv2.resize(frame, None, fx=0.5, fy=0.5) 
         # get new image dimensions
         rows, cols = frame.shape[:2]
         # rotate frame
@@ -104,6 +114,24 @@ class Video():
         # pixel location
         frame = frame[:, bl[0]:bl[1]]
         return frame
+
+    def _process(self, frame):
+        """
+        Process video frame.
+
+        @param  frame:  input video frame
+
+        @return frame:  processed video frame
+        @return feat:   feature space of frame if processor is set, else false
+        """
+        frame = cv2.resize(frame, None, fx=0.5, fy=0.5) 
+        frame = self._rotate_crop(frame)
+        if self._processor is not None:
+            self._processor.set_image(frame)
+            feat = self._processor.compute()
+            frame = self._processor.visualize()    
+            return frame, feat
+        return frame, False
 
     def run(self):
         """
@@ -120,7 +148,7 @@ class Video():
             if ret is False:
                 break
             #TODO PROCESS VIDEO FRAME
-            frame = self._process(frame)
+            frame, feat = self._process(frame)
             # display
             if self._display(frame) is False:
                 break
@@ -130,6 +158,7 @@ class Video():
 def main():
     """ Main Function. """
     import sys
+    from hog import HOG
 
     # check command line inputs
     if len(sys.argv) >= 2:
@@ -139,8 +168,13 @@ def main():
     else:
         # set default video path
         video_path = 'dataset/IMG_0687.MOV'
+    # HoG parameters
+    hog_params = {'winSize': (384, 480), 'blockSize': (32, 32),
+        'blockStride': (16, 16), 'cellSize': (16, 16), 'nbins': 9}    
+    # create frame processor object
+    hog = HOG(**hog_params)
     # create video player object
-    vod = Video(video_path)
+    vod = Video(video_path=video_path, processor=hog)
     vod.run()
 
 if __name__ == '__main__':

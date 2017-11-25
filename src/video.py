@@ -129,7 +129,7 @@ class Video():
         if self._processor is not None:
             self._processor.set_image(frame)
             feat = self._processor.compute()
-            frame = self._processor.visualize()    
+            frame = self._processor.visualize(skip_every=2)    
             return frame, feat
         return frame, False
 

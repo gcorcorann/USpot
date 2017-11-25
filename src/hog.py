@@ -79,9 +79,11 @@ class HOG():
         """
         angles = [x for x in range(0, 180, 180//self._nbins)]
         for i, b in enumerate(hist):
+            if b <= 0.1:
+                b = 0
             ang = angles[i]
             # multiple gradient magnitude by scalar for viewing
-            b *= 5
+            b *= 50
             x = int(round(b*cos(radians(ang))))
             y = int(round(b*sin(radians(ang))))
             # draw line in direction of gradient
@@ -113,6 +115,9 @@ class HOG():
                 _i = i * skip_every
                 _j = j * skip_every
                 hist = h[_i,_j,0] + h[_i,_j,1] + h[_i,_j,2] + h[_i,_j,3]
+                den = sum(hist)
+                if den != 0:
+                    hist /= den
                 self._display_hist(img_disp, (x,y), hist) 
         return img_disp
 

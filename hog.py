@@ -115,7 +115,7 @@ class HOG():
 def test():
     """ Test Function. """
     # read input image
-    img_path = '/home/gary/opencv/samples/data/pic6.png'
+    img_path = 'pic6.png'
     img = cv2.imread(img_path)
 
     # HOG parameters

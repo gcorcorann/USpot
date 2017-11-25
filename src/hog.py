@@ -81,16 +81,18 @@ class HOG():
         for i, b in enumerate(hist):
             ang = angles[i]
             # multiple gradient magnitude by scalar for viewing
-            b *= 10
+            b *= 5
             x = int(round(b*cos(radians(ang))))
             y = int(round(b*sin(radians(ang))))
             # draw line in direction of gradient
             cv2.line(img_disp, (center[0]-y,center[1]-x),
                     (center[0]+y,center[1]+x), (0, 0, 180))
 
-    def visualize(self):
+    def visualize(self, skip_every=1):
         """
         Visualize HoG features.
+
+        @param  skip_every: when display, skip every other HoG feature
 
         @return img_disp:   input image with HoG features overlayed
         """
@@ -99,23 +101,25 @@ class HOG():
             return
         cellSize = self._cellSize[0]
         blockSize = self._blockSize[0]
+        winSize = self._winSize
         img_disp = self.img.copy()
         rows, cols = img_disp.shape[:2]
         # format HoG descriptor
-        h = np.reshape(self.h, (-1, 2*blockSize//cellSize, self._nbins))
-        count = 0
+        h = np.reshape(self.h, (winSize[0]//cellSize-1, winSize[1]//cellSize-1,
+                2*blockSize//cellSize, self._nbins))
         # draw HoG features
-        for x in range(cellSize, cols, 2*cellSize):
-            for y in range(cellSize, rows, 2*cellSize):
-                hist = h[count,0] + h[count,1] + h[count,2] + h[count,3]
+        for i, x in enumerate(range(cellSize, cols, skip_every*cellSize)):
+            for j, y in enumerate(range(cellSize, rows, skip_every*cellSize)):
+                _i = i * skip_every
+                _j = j * skip_every
+                hist = h[_i,_j,0] + h[_i,_j,1] + h[_i,_j,2] + h[_i,_j,3]
                 self._display_hist(img_disp, (x,y), hist) 
-                count += 2
         return img_disp
 
 def test():
     """ Test Function. """
     # read input image
-    img_path = 'pic6.png'
+    img_path = '../images/pic6.png'
     img = cv2.imread(img_path)
 
     # HOG parameters
@@ -128,7 +132,7 @@ def test():
     hog.set_image(img)
     h = hog.compute()
     print('h:', h.shape)
-    img_disp = hog.visualize()
+    img_disp = hog.visualize(skip_every=1)
     cv2.imshow('HoG Features', img_disp)
     cv2.waitKey(0)
     cv2.destroyAllWindows()

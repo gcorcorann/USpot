@@ -1,10 +1,15 @@
+#!/usr/bin/env python3
 """
 Video Player Module.
 
 @author: Gary Corcoran
 @date_created: Nov. 24th, 2017
-"""
 
+USAGE: python video.py [<video_source>]
+
+Keys:
+    q   -   exit video
+"""
 import numpy as np
 import cv2
 
@@ -87,8 +92,8 @@ class Video():
         """
         cv2.imshow('Frame', frame)
         key = cv2.waitKey(1)
-        # if user press 'q'
-        if key == 113:
+        # if user wants to exit'
+        if key == ord('q'):
             print('User quit video.')
             return False
         return True
@@ -137,7 +142,6 @@ class Video():
         """
         Play video stored in video_path.
         """
-        print("Press 'q' to quit video.")
         if self.video_path is None:
             print('Please input video path before running')
             return
@@ -159,10 +163,8 @@ def main():
     """ Main Function. """
     import sys
     from hog import HOG
-
-    # check command line inputs
+    print(__doc__)
     if len(sys.argv) >= 2:
-        print(sys.argv[1])
         # set command line input to video path
         video_path = sys.argv[1]
     else:

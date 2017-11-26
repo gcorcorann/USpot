@@ -1,10 +1,15 @@
+#!/usr/bin/env python3
 """
 Histogram of Orientated Gradients.
 
 @author: Gary Corcoran
 @date_created: Nov. 23rd, 2017
-"""
 
+USAGE: hog.py [<image_source>]
+
+Keys:
+    any key   -   exit
+"""
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
@@ -123,10 +128,17 @@ class HOG():
 
 def test():
     """ Test Function. """
-    # read input image
-    img_path = '../images/pic6.png'
-    img = cv2.imread(img_path)
+    import sys
+    print(__doc__)
+    if len(sys.argv) >= 2:
+        # set image path to user's input
+        img_path = sys.argv[1]
+    else:
+        # read default input image
+        img_path = '../images/pic6.png'
 
+    # read input image
+    img = cv2.imread(img_path)
     # HOG parameters
     hog_params = {'winSize': (224, 320), 'blockSize': (32, 32),
             'blockStride': (16, 16), 'cellSize': (16, 16),
@@ -135,8 +147,9 @@ def test():
     # create HoG object
     hog = HOG(**hog_params)
     hog.set_image(img)
+    # copmute and visualize HoG features
     h = hog.compute()
-    print('h:', h.shape)
+    print('HoG feature dimension:', h.shape)
     img_disp = hog.visualize(skip_every=1)
     cv2.imshow('HoG Features', img_disp)
     cv2.waitKey(0)

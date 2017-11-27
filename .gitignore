@@ -1,2 +1,4 @@
 dataset
-src/__*
+src/__pycache__
+src/.*.swp
+

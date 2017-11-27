@@ -22,9 +22,17 @@ class Video():
         @param  video_path: path to input video file
         @param  processor:  frame processor object
         """
-        self.video_path = video_path
+        self._video_path = video_path
         self._processor = processor
         self._cap = None
+
+    def __del__(self):
+        """
+        Object destructor to release resources.
+        """
+        if self._cap is not None:
+            self._cap.release()
+        cv2.destroyAllWindows()
 
     def set_video_path(self, video_path):
         """
@@ -34,7 +42,7 @@ class Video():
 
         @modifies   self.video_path:    stores video file
         """
-        self.video_path = video_path
+        self._video_path = video_path
 
     def set_processor(self, processor):
         """
@@ -52,7 +60,7 @@ class Video():
 
         @return video_path: path to input video file
         """
-        return self.video_path
+        return self._video_path
 
     def _is_opened(self):
         """
@@ -62,8 +70,20 @@ class Video():
         """
         ret = self._cap.isOpened()
         if ret is False:
-            print('Could not opened video file stored at:', self.video_path)
+            print('VideoError: Could not opened video file stored at:', 
+                    self.video_path)
         return ret
+
+    def _check_video_path(self):
+        """
+        Check if video path is set.
+
+        @return ret:    true if video path is set, else false
+        """
+        if self.get_video_path() is None:
+            print('VideoError: Please input video path before running.')
+            return False
+        return True
 
     def _read(self):
         """
@@ -74,15 +94,8 @@ class Video():
         """
         ret, frame = self._cap.read()
         if ret is False:
-            print('Reached end of file.')
+            print('VideoError: Reached end of file.')
         return ret, frame
-
-    def _release(self):
-        """
-        Release resources.
-        """
-        self._cap.release()
-        cv2.destroyAllWindows()
 
     def _display(self, frame):
         """
@@ -94,7 +107,7 @@ class Video():
         key = cv2.waitKey(1)
         # if user wants to exit'
         if key == ord('q'):
-            print('User quit video.')
+            print('VideoError: User quit video.')
             return False
         return True
 
@@ -142,22 +155,21 @@ class Video():
         """
         Play video stored in video_path.
         """
-        if self.video_path is None:
-            print('Please input video path before running')
+        # check if user set video path
+        if self._check_video_path() is False:
             return
-        self._cap = cv2.VideoCapture(self.video_path)
+        self._cap = cv2.VideoCapture(self._video_path)
+        # while video is still opened
         while self._is_opened():
             # read frame
-            ret, frame = self._cap.read()
+            ret, frame = self._read()
             if ret is False:
-                break
+                return
             #TODO PROCESS VIDEO FRAME
             frame, feat = self._process(frame)
             # display
             if self._display(frame) is False:
-                break
-        # release resources
-        self._release() 
+                return
 
 def main():
     """ Main Function. """

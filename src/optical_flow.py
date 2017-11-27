@@ -89,8 +89,8 @@ def main():
     """ Testing function. """
     print(__doc__)
     # read sequence of images
-    frame1 = cv2.imread('/home/gary/opencv/samples/data/basketball1.png')
-    frame2 = cv2.imread('/home/gary/opencv/samples/data/basketball2.png')
+    frame1 = cv2.imread('../images/basketball1.png')
+    frame2 = cv2.imread('../images//basketball2.png')
     # convert to grayscale for flow
     gray1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
     gray2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
